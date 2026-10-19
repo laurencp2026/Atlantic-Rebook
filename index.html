@@ -3,443 +3,563 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#073b4c">
-<meta name="description" content="Atlantic Rebook — surf lesson cancellations and rebooking management for Atlantic Edge Surf School, Lahinch.">
-<title>Atlantic Rebook | Atlantic Edge Surf School</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#102f32">
+<meta name="description" content="Atlantic Rebook surf lesson cancellation and rebooking demo for Atlantic Edge Surf School, Lahinch.">
+<title>Atlantic Rebook — Surf School Operations</title>
 <style>
 :root {
-  --navy: #073b4c;
-  --ocean: #087e8b;
-  --foam: #eaf7f7;
-  --sand: #fff8e9;
-  --ink: #15313b;
-  --muted: #617680;
-  --line: #d9e5e8;
-  --red: #b42332;
-  --red-bg: #fff0f0;
-  --green: #176b47;
-  --white: #fff;
-  --radius: 16px;
+  --deep: #102f32;
+  --deep2: #1a4142;
+  --sea: #b9d8cf;
+  --foam: #e9eee5;
+  --sand: #f1e7d3;
+  --paper: #faf7ef;
+  --orange: #f0784b;
+  --ink: #183536;
+  --muted: #687a73;
+  --line: #d4dcd3;
+  --white: #fffdf7;
+  --red: #a93632;
+  --redbg: #fae7e2;
+  --green: #28664c;
+  --greenbg: #e4f0e6;
 }
 * { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 body {
   margin: 0;
-  background: #f3f7f8;
   color: var(--ink);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
+  background: var(--paper);
+  font-family: "Trebuchet MS", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
 }
-button { font: inherit; cursor: pointer; }
-button:focus-visible, select:focus-visible {
-  outline: 3px solid #e7a93c;
+button, select { font: inherit; }
+button:focus-visible, select:focus-visible, a:focus-visible {
+  outline: 3px solid var(--orange);
   outline-offset: 3px;
 }
+button { cursor: pointer; }
 button:disabled { opacity: .45; cursor: not-allowed; }
-.topbar {
-  background: var(--navy);
-  color: white;
-  padding: max(20px, env(safe-area-inset-top)) 20px 20px;
+a { color: inherit; }
+.topline { height: 5px; background: var(--orange); }
+header {
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
 }
-.topbar-inner, main, .bottom-inner {
-  width: 100%;
-  max-width: 760px;
-  margin: 0 auto;
+.wrap { width: min(1120px, calc(100% - 32px)); margin: auto; }
+.header-inner {
+  min-height: 78px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
 }
-.brand-row { display: flex; align-items: center; gap: 12px; }
+.brand {
+  display: flex; align-items: center; gap: 11px;
+  text-decoration: none; color: var(--deep);
+}
 .brand-mark {
-  width: 44px; height: 44px;
-  display: grid; place-items: center;
-  border: 1px solid #ffffff70;
-  border-radius: 14px;
-  font-size: 25px;
+  width: 42px; height: 42px; display: grid; place-items: center;
+  border-radius: 50% 50% 8px 50%;
+  background: var(--deep); color: var(--sea); font-size: 25px;
 }
-.brand-name { font-size: 23px; font-weight: 800; letter-spacing: -.7px; }
-.brand-sub { font-size: 13px; color: #c7e4e9; }
-.header-meta {
-  margin-top: 16px;
-  display: flex; justify-content: space-between; align-items: center;
-  gap: 10px; flex-wrap: wrap;
+.brand-name {
+  font-size: 19px; font-weight: 900; letter-spacing: -1px;
+  line-height: 1.15;
 }
-.date-label { color: #e3f2f4; font-size: 14px; }
-.sample-badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  border: 1px solid #f1d99b;
-  background: #fff4d7; color: #694b00;
-  padding: 4px 9px; border-radius: 7px;
-  font-size: 11px; font-weight: 800; letter-spacing: .5px;
+.brand-sub {
+  display: block; margin-top: 4px; font-size: 10px;
+  color: var(--muted); font-weight: 800; letter-spacing: 1.3px;
+  text-transform: uppercase;
 }
-main { padding: 22px 16px 110px; }
-.view-heading {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  gap: 12px; margin-bottom: 18px;
-}
-h1 { margin: 0; font-size: 27px; letter-spacing: -.7px; line-height: 1.2; }
-.subtitle { color: var(--muted); font-size: 14px; margin-top: 6px; }
-.section-label {
-  font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
-  font-weight: 800; color: var(--muted); margin: 22px 0 10px;
-}
-.stats-grid {
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px; margin-bottom: 22px;
-}
-.stat {
-  background: white; border: 1px solid var(--line);
-  padding: 14px; border-radius: 14px;
-}
-.stat-label { font-size: 12px; color: var(--muted); font-weight: 650; }
-.stat-value { font-size: 27px; font-weight: 850; letter-spacing: -.7px; margin-top: 2px; }
-.stat-note { font-size: 12px; color: var(--muted); }
-.session-list, .booking-list { display: grid; gap: 12px; }
-.card {
-  background: white; border: 1px solid var(--line);
-  border-radius: var(--radius); padding: 16px;
-  box-shadow: 0 2px 5px #17394508;
-}
-.card-top {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  gap: 10px;
-}
-.card h2 { margin: 0; font-size: 18px; line-height: 1.35; }
-.card h3 { margin: 0; font-size: 16px; }
-.session-time { font-size: 20px; font-weight: 850; color: var(--navy); }
-.pill {
-  border-radius: 8px; padding: 4px 8px; font-size: 12px;
-  font-weight: 750; background: var(--foam); color: var(--navy);
+.sample-tag {
+  padding: 6px 9px; background: var(--sand); color: var(--deep);
+  border: 1px solid #d9c9aa; border-radius: 3px;
+  font-size: 10px; font-weight: 900; letter-spacing: 1px;
   white-space: nowrap;
 }
-.pill.red { background: var(--red-bg); color: var(--red); }
-.pill.green { background: #e8f7ee; color: var(--green); }
-.meta-line { margin-top: 10px; color: var(--muted); font-size: 14px; }
-.capacity-track {
-  height: 8px; border-radius: 20px; overflow: hidden;
-  background: #e8eff1; margin-top: 12px;
+.intro-band {
+  background: var(--deep); color: var(--paper); padding: 24px 0 21px;
 }
-.capacity-fill { height: 100%; border-radius: 20px; background: var(--ocean); }
-.capacity-fill.full { background: var(--red); }
-.capacity-label {
+.intro-top {
+  display: flex; justify-content: space-between;
+  gap: 16px; align-items: flex-start;
+}
+.eyebrow {
+  color: var(--sea); font-size: 10px; font-weight: 900;
+  letter-spacing: 2px; text-transform: uppercase;
+}
+h1 {
+  margin: 7px 0 6px; font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(30px, 6vw, 45px); font-weight: 500;
+  letter-spacing: -1.5px; line-height: 1.12;
+}
+.intro-copy { color: #c7d8ce; font-size: 13px; margin: 0; }
+.today-date {
+  padding: 9px 11px; border: 1px solid #ffffff40;
+  color: var(--sea); font-size: 11px; font-weight: 800;
+  text-align: right; white-space: nowrap;
+}
+.main-wrap { padding-top: 20px; padding-bottom: 112px; }
+.nav {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 6px; padding: 6px; margin-bottom: 23px;
+  background: #ece9df; border: 1px solid var(--line);
+  border-radius: 5px;
+}
+.nav-btn {
+  min-height: 57px; border: 0; border-radius: 3px;
+  color: var(--muted); background: transparent;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 1px; font-weight: 900; font-size: 11px;
+  letter-spacing: .8px;
+}
+.nav-btn .nav-icon { font-size: 19px; line-height: 1.3; }
+.nav-btn.active {
+  color: var(--paper); background: var(--deep);
+}
+.nav-count {
+  display: inline-block; margin-left: 3px; color: var(--orange);
+}
+.view-heading {
+  display: flex; justify-content: space-between;
+  align-items: flex-start; gap: 15px; margin-bottom: 18px;
+}
+.view-kicker {
+  color: var(--muted); font-size: 10px; font-weight: 900;
+  letter-spacing: 1.7px; text-transform: uppercase;
+}
+h2 {
+  margin: 5px 0 5px; color: var(--deep);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(30px, 6vw, 39px); font-weight: 500;
+  letter-spacing: -1.3px; line-height: 1.12;
+}
+.view-subtitle { color: var(--muted); font-size: 13px; }
+.small-label {
+  color: var(--muted); font-size: 10px; font-weight: 900;
+  letter-spacing: 1.3px; text-transform: uppercase;
+}
+.stats {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px; margin-bottom: 25px;
+}
+.stat {
+  padding: 14px; background: var(--white);
+  border: 1px solid var(--line); border-top: 3px solid var(--sea);
+  min-width: 0;
+}
+.stat-label { color: var(--muted); font-size: 11px; font-weight: 800; }
+.stat-value {
+  margin-top: 5px; color: var(--deep);
+  font-size: clamp(25px, 5vw, 32px); font-weight: 900;
+  letter-spacing: -1.2px; line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.stat-note { margin-top: 4px; color: var(--muted); font-size: 11px; }
+.section-divider {
+  display: flex; justify-content: space-between; gap: 10px;
+  align-items: center; margin: 26px 0 12px;
+  padding-bottom: 9px; border-bottom: 1px solid #c6d0c6;
+}
+.section-divider span:first-child {
+  color: var(--deep); font-size: 11px;
+  font-weight: 900; letter-spacing: 1.2px; text-transform: uppercase;
+}
+.section-divider span:last-child { color: var(--muted); font-size: 11px; }
+.session-list, .booking-list { display: grid; gap: 12px; }
+.card {
+  min-width: 0; background: var(--white);
+  border: 1px solid var(--line); padding: 16px;
+}
+.card-head {
+  display: flex; justify-content: space-between;
+  align-items: flex-start; gap: 10px;
+}
+.session-time {
+  color: var(--deep); font-family: Georgia, "Times New Roman", serif;
+  font-size: 30px; font-weight: 500; letter-spacing: -1px; line-height: 1.1;
+}
+.session-date { margin-top: 5px; color: var(--muted); font-size: 12px; }
+.pill {
+  display: inline-block; padding: 5px 7px; border-radius: 2px;
+  background: var(--foam); color: var(--deep);
+  font-size: 10px; font-weight: 900; white-space: nowrap;
+}
+.pill.red { background: var(--redbg); color: var(--red); }
+.pill.green { background: var(--greenbg); color: var(--green); }
+.meta {
+  margin-top: 12px; color: var(--muted); font-size: 12px;
+}
+.meta strong { color: var(--ink); }
+.capacity-track {
+  height: 7px; margin-top: 14px; overflow: hidden;
+  background: #e8e8dc;
+}
+.capacity-fill { height: 100%; background: #6b9b87; }
+.capacity-fill.full { background: var(--orange); }
+.capacity-caption {
   display: flex; justify-content: space-between; gap: 8px;
-  margin-top: 6px; color: var(--muted); font-size: 12px;
+  margin-top: 6px; color: var(--muted); font-size: 10px;
 }
 .btn {
-  border: 0; border-radius: 12px; min-height: 50px; padding: 12px 16px;
-  font-weight: 800; display: inline-flex; justify-content: center;
-  align-items: center; text-align: center; gap: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; min-height: 49px; padding: 11px 14px;
+  border: 1px solid transparent; border-radius: 3px;
+  font-size: 12px; font-weight: 900; text-align: center;
+  letter-spacing: .4px;
 }
-.btn-block { width: 100%; margin-top: 15px; min-height: 54px; }
-.btn-primary { background: var(--ocean); color: white; }
-.btn-danger { background: var(--red); color: white; }
-.btn-secondary { background: #edf3f5; color: var(--navy); border: 1px solid var(--line); }
-.btn-small { min-height: 42px; padding: 9px 12px; font-size: 14px; }
-.btn-reset { color: var(--red); background: white; border: 1px solid #e9b8bd; }
-.booking-info {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-  margin-top: 15px;
+.btn-block { width: 100%; margin-top: 15px; min-height: 53px; }
+.btn-danger { background: var(--orange); color: #2b211b; }
+.btn-danger:hover { background: #ff956e; }
+.btn-primary { background: var(--deep); color: var(--white); }
+.btn-primary:hover { background: var(--deep2); }
+.btn-secondary { background: var(--foam); color: var(--deep); border-color: var(--line); }
+.btn-reset { background: transparent; color: var(--red); border-color: #d8b9af; }
+.booking-card.overdue {
+  border: 2px solid #c75c4b; background: #fff8f4;
 }
-.info-cell { min-width: 0; }
-.info-label {
-  color: var(--muted); font-size: 11px; text-transform: uppercase;
-  font-weight: 800; letter-spacing: .55px;
-}
-.info-value { overflow-wrap: anywhere; font-size: 14px; margin-top: 2px; }
-.booking-description { font-size: 13px; color: var(--muted); margin-top: 5px; }
-.booking-card.overdue { border: 2px solid #d93843; background: #fff7f7; }
 .overdue-banner {
-  color: var(--red); font-size: 12px; font-weight: 850;
-  margin: 12px 0 0; padding: 8px 10px;
-  border-radius: 8px; background: #ffe5e5;
+  margin-top: 12px; padding: 9px 10px;
+  background: var(--redbg); color: var(--red);
+  font-size: 11px; font-weight: 900;
 }
-.rebook-picker {
-  display: grid; gap: 9px; margin-top: 15px;
+.booking-name {
+  margin: 0; font-size: 17px; font-weight: 900;
+  letter-spacing: -.3px; overflow-wrap: anywhere;
 }
-.rebook-picker label { font-size: 13px; font-weight: 800; }
+.booking-size { color: var(--muted); font-size: 12px; margin-top: 4px; }
+.booking-info {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 13px 9px; margin-top: 17px;
+}
+.info-label {
+  color: var(--muted); font-size: 9px; font-weight: 900;
+  letter-spacing: 1px; text-transform: uppercase;
+}
+.info-value { margin-top: 3px; font-size: 12px; overflow-wrap: anywhere; }
+.picker { margin-top: 16px; }
+.picker label {
+  display: block; margin-bottom: 7px;
+  color: var(--deep); font-size: 11px; font-weight: 900;
+}
 select {
-  width: 100%; min-height: 50px; border: 1px solid #c7d7dc;
-  border-radius: 10px; padding: 10px; background: white;
-  color: var(--ink); font: inherit;
+  width: 100%; min-height: 49px; padding: 9px;
+  border: 1px solid #bdccc2; border-radius: 3px;
+  color: var(--ink); background: var(--white); font-size: 12px;
 }
-.empty-state {
-  text-align: center; padding: 30px 18px; background: white;
-  border: 1px dashed #b9cdd3; border-radius: var(--radius);
+.booking-footnote { margin: 11px 0 0; color: var(--muted); font-size: 11px; }
+.empty {
+  padding: 35px 18px; text-align: center;
+  border: 1px dashed #b9c9bd; background: var(--white);
 }
-.empty-icon { font-size: 32px; }
-.empty-state h2 { font-size: 18px; margin: 8px 0 4px; }
-.empty-state p { color: var(--muted); margin: 0; font-size: 14px; }
+.empty-symbol { color: #719587; font-size: 32px; }
+.empty h3 {
+  margin: 9px 0 5px; color: var(--deep);
+  font-family: Georgia, "Times New Roman", serif; font-size: 24px; font-weight: 500;
+}
+.empty p { margin: 0; color: var(--muted); font-size: 13px; }
 .money-hero {
-  background: var(--navy); color: white; padding: 24px;
-  border-radius: 20px; margin-bottom: 14px;
+  position: relative; overflow: hidden; padding: 23px;
+  background: var(--deep); color: var(--paper);
 }
-.money-hero .stat-label { color: #c9e4e9; }
+.money-hero::after {
+  content: "€"; position: absolute; right: 12px; bottom: -55px;
+  color: #ffffff0b; font-family: Georgia, serif; font-size: 190px;
+  pointer-events: none;
+}
+.money-hero .small-label { color: var(--sea); }
 .money-amount {
-  font-size: clamp(36px, 9vw, 52px); line-height: 1.15;
-  font-weight: 900; letter-spacing: -1.8px; margin: 8px 0;
+  position: relative; z-index: 1; margin: 10px 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(45px, 10vw, 70px); letter-spacing: -3px; line-height: 1.1;
 }
-.money-note { color: #c9e4e9; font-size: 13px; }
-.money-details { display: grid; gap: 10px; }
+.money-description { position: relative; z-index: 1; color: #c7d8ce; font-size: 12px; }
+.money-rows { display: grid; gap: 8px; margin-top: 12px; }
 .money-row {
   display: flex; justify-content: space-between; align-items: center;
-  gap: 14px; background: white; border: 1px solid var(--line);
-  padding: 17px; border-radius: 13px;
+  gap: 12px; padding: 16px; background: var(--white);
+  border: 1px solid var(--line);
 }
-.money-row span:first-child { font-size: 14px; color: var(--muted); }
-.money-row strong { font-size: 17px; text-align: right; }
-.rate-note {
-  background: var(--sand); border: 1px solid #f0e0bd; border-radius: 12px;
-  padding: 14px; font-size: 13px; color: #6c5526; margin-top: 14px;
+.money-row span { color: var(--muted); font-size: 12px; }
+.money-row strong { color: var(--deep); font-size: 17px; text-align: right; }
+.notice {
+  margin-top: 14px; padding: 14px; background: var(--sand);
+  border: 1px solid #dfd1b8; color: #5e523a; font-size: 12px;
 }
-.bottom-nav {
-  position: fixed; z-index: 5; bottom: 0; left: 0; right: 0;
-  padding: 8px 12px max(8px, env(safe-area-inset-bottom));
-  background: #ffffffed; backdrop-filter: blur(12px);
-  border-top: 1px solid var(--line);
+.actions { display: grid; gap: 9px; margin-top: 24px; }
+.footnote { margin-top: 12px; color: var(--muted); font-size: 11px; }
+footer {
+  padding: 23px 0; background: var(--deep); color: #c7d8ce;
 }
-.bottom-inner { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.nav-btn {
-  border: 0; background: transparent; color: var(--muted);
-  min-height: 62px; border-radius: 12px; font-weight: 750;
-  font-size: 12px; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 2px;
+.footer-inner {
+  display: flex; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap; align-items: center;
 }
-.nav-icon { font-size: 22px; line-height: 1.25; }
-.nav-btn.active { background: var(--foam); color: var(--navy); }
-.footer-actions { margin-top: 28px; }
-.small-print { color: var(--muted); font-size: 12px; margin-top: 12px; }
+footer p { margin: 0; font-size: 11px; }
+footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
 .toast {
-  position: fixed; bottom: 94px; left: 16px; right: 16px;
-  max-width: 500px; margin: 0 auto; z-index: 10;
-  background: var(--navy); color: white; border-radius: 12px;
-  padding: 14px 16px; box-shadow: 0 5px 24px #001c2690;
-  font-size: 14px; font-weight: 650;
+  position: fixed; z-index: 20; left: 16px; right: 16px;
+  bottom: 100px; width: fit-content; max-width: calc(100% - 32px);
+  margin: auto; padding: 14px 17px;
+  background: var(--deep); color: var(--white);
+  border-left: 4px solid var(--orange); box-shadow: 0 6px 25px #102f3230;
+  font-size: 12px; font-weight: 800;
 }
-.toast[hidden] { display: none; }
+[hidden] { display: none !important; }
 @media (min-width: 600px) {
-  main { padding: 28px 24px 120px; }
+  .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .session-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .stats-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .stat-value { font-size: 24px; }
   .booking-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .actions { grid-template-columns: 1fr 1fr; }
 }
-@media (prefers-reduced-motion: no-preference) {
-  .btn, .nav-btn { transition: background .15s ease, transform .15s ease; }
-  .btn:active, .nav-btn:active { transform: scale(.98); }
+@media (min-width: 850px) {
+  .main-wrap { padding-top: 30px; }
+  .intro-band { padding: 30px 0; }
+  .session-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .booking-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .card { padding: 19px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; }
 }
 </style>
 </head>
 <body>
-<header class="topbar">
-  <div class="topbar-inner">
-    <div class="brand-row">
-      <div class="brand-mark" aria-hidden="true">🌊</div>
-      <div>
-        <div class="brand-name">Atlantic Rebook</div>
-        <div class="brand-sub">Atlantic Edge Surf School · Lahinch, Co. Clare</div>
-      </div>
-    </div>
-    <div class="header-meta">
-      <div class="date-label" id="header-date"></div>
-      <span class="sample-badge">● SAMPLE DATA</span>
-    </div>
+<div class="topline"></div>
+
+<header>
+  <div class="wrap header-inner">
+    <a class="brand" href="#main" aria-label="Atlantic Rebook home">
+      <span class="brand-mark" aria-hidden="true">≋</span>
+      <span>
+        <span class="brand-name">ATLANTIC REBOOK</span>
+        <span class="brand-sub">Surf school operations</span>
+      </span>
+    </a>
+    <span class="sample-tag">SAMPLE DATA</span>
   </div>
 </header>
 
-<main id="app" aria-live="polite"></main>
+<div class="intro-band">
+  <div class="wrap intro-top">
+    <div>
+      <div class="eyebrow">Atlantic Edge · Lahinch, Ireland</div>
+      <h1>Keep the session alive.</h1>
+      <p class="intro-copy">Cancelled lessons, organised. Rebooking, made clearer.</p>
+    </div>
+    <div class="today-date" id="today-date"></div>
+  </div>
+</div>
 
-<nav class="bottom-nav" aria-label="Main navigation">
-  <div class="bottom-inner">
+<main class="wrap main-wrap" id="main">
+  <nav class="nav" aria-label="Main navigation">
     <button class="nav-btn active" data-view="today" aria-current="page">
-      <span class="nav-icon" aria-hidden="true">☀️</span>
-      <span>TODAY</span>
+      <span class="nav-icon" aria-hidden="true">☀</span>
+      TODAY
     </button>
     <button class="nav-btn" data-view="rebook">
-      <span class="nav-icon" aria-hidden="true">↪️</span>
-      <span>REBOOK <span id="nav-pending"></span></span>
+      <span class="nav-icon" aria-hidden="true">↗</span>
+      REBOOK <span class="nav-count" id="nav-count"></span>
     </button>
     <button class="nav-btn" data-view="money">
       <span class="nav-icon" aria-hidden="true">€</span>
-      <span>MONEY</span>
+      MONEY
     </button>
-  </div>
-</nav>
+  </nav>
 
-<div id="toast" class="toast" role="status" hidden></div>
+  <div id="app"></div>
+</main>
+
+<footer>
+  <div class="wrap footer-inner">
+    <p>ATLANTIC REBOOK · SAMPLE DATA · STUDENT PROJECT</p>
+    <a href="https://laurencp2026.github.io/" target="_blank" rel="noopener noreferrer">PROJECT HOME ↗</a>
+  </div>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
 <script>
 "use strict";
 
 (() => {
-  const STORAGE_KEY = "atlanticRebook.sampleData.v1";
+  const STORAGE_KEY = "atlanticRebook.sampleData.v2";
   const CAPACITY = 12;
-  const PRICE_PER_PERSON = 45;
+  const PRICE = 45;
   const OVERDUE_MS = 48 * 60 * 60 * 1000;
+
   const app = document.getElementById("app");
-  const toastEl = document.getElementById("toast");
+  const toastElement = document.getElementById("toast");
 
   let state;
-  let currentView = "today";
-  let toastTimer = null;
+  let view = "today";
+  let toastTimer;
 
   const pad = n => String(n).padStart(2, "0");
-  const localDateKey = date =>
-    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 
-  function atLocalTime(dayOffset, hour, minute) {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    d.setDate(d.getDate() + dayOffset);
-    d.setHours(hour, minute, 0, 0);
-    return d.toISOString();
+  function dateKey(date) {
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
   }
 
-  function dateAt(dayOffset) {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    d.setDate(d.getDate() + dayOffset);
-    return localDateKey(d);
+  function dayKey(offset = 0) {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() + offset);
+    return dateKey(date);
+  }
+
+  function dateTimeISO(offset, hour, minute) {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() + offset);
+    date.setHours(hour, minute, 0, 0);
+    return date.toISOString();
   }
 
   function makeInitialState() {
-    const today = dateAt(0);
-    const slots = [
+    const today = dayKey();
+    const sessions = [
       ["TODAY-1", today, 9, 0, "Aoife Murphy"],
       ["TODAY-2", today, 10, 30, "Cian O'Brien"],
       ["TODAY-3", today, 12, 0, "Niamh Kelly"],
       ["TODAY-4", today, 13, 30, "Finn Walsh"],
       ["TODAY-5", today, 15, 0, "Aoife Murphy"],
       ["TODAY-6", today, 16, 30, "Cian O'Brien"],
-      ["FUTURE-1", dateAt(1), 9, 30, "Niamh Kelly"],
-      ["FUTURE-2", dateAt(1), 13, 0, "Finn Walsh"],
-      ["FUTURE-3", dateAt(2), 10, 0, "Aoife Murphy"]
-    ];
-
-    const sessions = slots.map(([id, date, hour, minute, instructor]) => ({
-      id, date, hour, minute, instructor, capacity: CAPACITY,
-      cancelled: false
+      ["FUTURE-1", dayKey(1), 9, 30, "Niamh Kelly"],
+      ["FUTURE-2", dayKey(1), 13, 0, "Finn Walsh"],
+      ["FUTURE-3", dayKey(2), 10, 0, "Aoife Murphy"]
+    ].map(([id, date, hour, minute, instructor]) => ({
+      id, date, hour, minute, instructor, capacity: CAPACITY, cancelled: false
     }));
 
-    // All names and contact details below are entirely fictional.
-    // One pending group is deliberately older than 48 hours to test the warning.
+    // Fictional sample records only. No real customer information.
     const bookings = [
       {
         id: "B001", name: "SAMPLE: Jamie Byrne", groupSize: 2,
         contact: "sample.jamie@example.com", phone: "SAMPLE: 080 000 0001",
-        sessionId: "TODAY-1", status: "booked", cancelledAt: null,
-        originalSession: null
+        sessionId: "TODAY-1", status: "booked",
+        cancelledAt: null, originalSession: null
       },
       {
         id: "B002", name: "SAMPLE: Casey Nolan", groupSize: 3,
         contact: "sample.casey@example.com", phone: "SAMPLE: 080 000 0002",
-        sessionId: "TODAY-1", status: "booked", cancelledAt: null,
-        originalSession: null
+        sessionId: "TODAY-1", status: "booked",
+        cancelledAt: null, originalSession: null
       },
       {
         id: "B003", name: "SAMPLE: Morgan Hayes", groupSize: 2,
         contact: "sample.morgan@example.com", phone: "SAMPLE: 080 000 0003",
-        sessionId: "TODAY-2", status: "booked", cancelledAt: null,
-        originalSession: null
+        sessionId: "TODAY-2", status: "booked",
+        cancelledAt: null, originalSession: null
       },
       {
         id: "B004", name: "SAMPLE: Riley Quinn", groupSize: 4,
         contact: "sample.riley@example.com", phone: "SAMPLE: 080 000 0004",
-        sessionId: "TODAY-3", status: "booked", cancelledAt: null,
-        originalSession: null
+        sessionId: "TODAY-3", status: "booked",
+        cancelledAt: null, originalSession: null
       },
       {
         id: "B005", name: "SAMPLE: Alex Duffy", groupSize: 2,
         contact: "sample.alex@example.com", phone: "SAMPLE: 080 000 0005",
-        sessionId: "TODAY-4", status: "booked", cancelledAt: null,
-        originalSession: null
+        sessionId: "TODAY-4", status: "booked",
+        cancelledAt: null, originalSession: null
       },
       {
         id: "B006", name: "SAMPLE: Taylor Flynn", groupSize: 3,
         contact: "sample.taylor@example.com", phone: "SAMPLE: 080 000 0006",
-        sessionId: "FUTURE-1", status: "booked", cancelledAt: null,
-        originalSession: null
+        sessionId: "FUTURE-1", status: "booked",
+        cancelledAt: null, originalSession: null
       },
       {
         id: "B007", name: "SAMPLE: Jordan Casey", groupSize: 2,
         contact: "sample.jordan@example.com", phone: "SAMPLE: 080 000 0007",
-        sessionId: "FUTURE-2", status: "booked", cancelledAt: null,
-        originalSession: null
+        sessionId: "FUTURE-2", status: "booked",
+        cancelledAt: null, originalSession: null
       },
       {
         id: "B008", name: "SAMPLE: Sam Keane", groupSize: 3,
         contact: "sample.sam@example.com", phone: "SAMPLE: 080 000 0008",
         sessionId: null, status: "pending",
         cancelledAt: new Date(Date.now() - 50 * 60 * 60 * 1000).toISOString(),
-        originalSession: "SAMPLE: Sat 17 Oct, 10:30"
+        originalSession: "Sample session · 10:30"
       },
       {
         id: "B009", name: "SAMPLE: Drew Lynch", groupSize: 2,
         contact: "sample.drew@example.com", phone: "SAMPLE: 080 000 0009",
         sessionId: null, status: "pending",
         cancelledAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-        originalSession: "SAMPLE: Today, 12:00"
+        originalSession: "Sample session · 12:00"
       }
     ];
 
-    return { version: 1, sessions, bookings };
+    return { version: 2, sessions, bookings };
   }
 
-  function loadState() {
+  function save() {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed && parsed.version === 1 &&
-            Array.isArray(parsed.sessions) && Array.isArray(parsed.bookings)) {
-          return parsed;
-        }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (error) {
+      console.error("Saving failed:", error);
+      toast("Browser storage is unavailable. Changes may not persist.");
+    }
+  }
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (
+          parsed &&
+          parsed.version === 2 &&
+          Array.isArray(parsed.sessions) &&
+          Array.isArray(parsed.bookings)
+        ) return parsed;
       }
     } catch (error) {
-      console.warn("Saved sample data could not be loaded.", error);
+      console.warn("Could not load saved data:", error);
     }
 
-    const fresh = makeInitialState();
-    saveState(fresh);
-    return fresh;
-  }
-
-  function saveState(nextState = state) {
+    const initial = makeInitialState();
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(nextState));
-      return true;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
     } catch (error) {
-      console.error("Could not save Atlantic Rebook data.", error);
-      showToast("Warning: changes could not be saved in this browser.");
-      return false;
+      console.warn("Could not initialise browser storage:", error);
     }
+    return initial;
   }
 
   function escapeHTML(value) {
-    return String(value ?? "").replace(/[&<>"']/g, char => ({
+    return String(value ?? "").replace(/[&<>"']/g, c => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;",
       '"': "&quot;", "'": "&#39;"
-    })[char]);
+    })[c]);
   }
 
-  function euro(amount) {
+  function euro(value) {
     return new Intl.NumberFormat("en-IE", {
       style: "currency", currency: "EUR", maximumFractionDigits: 0
-    }).format(amount);
+    }).format(value);
   }
 
-  function prettyDate(dateString, options = {}) {
+  function formatDate(dateString, short = false) {
     const [y, m, d] = dateString.split("-").map(Number);
     return new Intl.DateTimeFormat("en-IE", {
-      weekday: options.short ? "short" : "long",
+      weekday: short ? "short" : "long",
       day: "numeric", month: "short",
-      ...(options.year ? { year: "numeric" } : {})
+      ...(short ? {} : { year: "numeric" })
     }).format(new Date(y, m - 1, d, 12));
   }
 
-  function timeLabel(session) {
+  function time(session) {
     return `${pad(session.hour)}:${pad(session.minute)}`;
   }
 
   function sessionLabel(session) {
-    return `${prettyDate(session.date, { short: true })}, ${timeLabel(session)}`;
+    return `${formatDate(session.date, true)} · ${time(session)}`;
   }
 
   function getSession(id) {
@@ -452,37 +572,39 @@ select {
     );
   }
 
-  function peopleBooked(sessionId) {
+  function bookedPeople(sessionId) {
     return bookedGroups(sessionId).reduce((sum, b) => sum + b.groupSize, 0);
   }
 
   function placesLeft(session) {
-    return Math.max(0, session.capacity - peopleBooked(session.id));
+    return Math.max(0, session.capacity - bookedPeople(session.id));
   }
 
-  function pendingBookings() {
+  function pending() {
     return state.bookings.filter(b => b.status === "pending");
   }
 
   function pendingPeople() {
-    return pendingBookings().reduce((sum, b) => sum + b.groupSize, 0);
+    return pending().reduce((sum, b) => sum + b.groupSize, 0);
   }
 
-  function isOverdue(booking, now = Date.now()) {
+  function overdue(booking, now = Date.now()) {
+    const timestamp = Date.parse(booking.cancelledAt);
     return booking.status === "pending" &&
-      Number.isFinite(Date.parse(booking.cancelledAt)) &&
-      now - Date.parse(booking.cancelledAt) >= OVERDUE_MS;
+      Number.isFinite(timestamp) && now - timestamp >= OVERDUE_MS;
   }
 
   function availableSessions(booking) {
     const now = new Date();
     return state.sessions
       .filter(session => {
-        if (session.cancelled || session.date < localDateKey(now)) return false;
-        const start = new Date(
+        if (session.cancelled || session.date < dayKey()) return false;
+
+        const starts = new Date(
           `${session.date}T${pad(session.hour)}:${pad(session.minute)}:00`
         );
-        return start > now && placesLeft(session) >= booking.groupSize;
+
+        return starts > now && placesLeft(session) >= booking.groupSize;
       })
       .sort((a, b) =>
         a.date.localeCompare(b.date) ||
@@ -491,344 +613,377 @@ select {
       .slice(0, 3);
   }
 
-  function showToast(message) {
-    toastEl.textContent = message;
-    toastEl.hidden = false;
+  function toast(message) {
+    toastElement.textContent = message;
+    toastElement.hidden = false;
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { toastEl.hidden = true; }, 3200);
+    toastTimer = setTimeout(() => { toastElement.hidden = true; }, 3500);
   }
 
-  function renderHeaderDate() {
-    document.getElementById("header-date").textContent =
+  function renderHeader() {
+    document.getElementById("today-date").textContent =
       new Intl.DateTimeFormat("en-IE", {
-        weekday: "long", day: "numeric", month: "long", year: "numeric"
+        weekday: "short", day: "numeric", month: "short", year: "numeric"
       }).format(new Date());
   }
 
   function renderNav() {
-    document.querySelectorAll(".nav-btn").forEach(button => {
-      const active = button.dataset.view === currentView;
+    document.querySelectorAll("[data-view]").forEach(button => {
+      const active = button.dataset.view === view;
       button.classList.toggle("active", active);
       if (active) button.setAttribute("aria-current", "page");
       else button.removeAttribute("aria-current");
     });
-    const count = pendingBookings().length;
-    document.getElementById("nav-pending").textContent = count ? `(${count})` : "";
+    const count = pending().length;
+    document.getElementById("nav-count").textContent = count ? `(${count})` : "";
+  }
+
+  function renderStats(items) {
+    return `<div class="stats">${items.map(item => `
+      <div class="stat">
+        <div class="stat-label">${item.label}</div>
+        <div class="stat-value">${item.value}</div>
+        <div class="stat-note">${item.note}</div>
+      </div>
+    `).join("")}</div>`;
   }
 
   function sessionCard(session) {
     const groups = bookedGroups(session.id);
-    const people = peopleBooked(session.id);
+    const people = bookedPeople(session.id);
     const left = placesLeft(session);
     const percent = Math.min(100, people / session.capacity * 100);
 
     return `
       <article class="card">
-        <div class="card-top">
+        <div class="card-head">
           <div>
-            <div class="session-time">${timeLabel(session)}</div>
-            <div class="meta-line">${escapeHTML(prettyDate(session.date))}</div>
+            <div class="session-time">${time(session)}</div>
+            <div class="session-date">${escapeHTML(formatDate(session.date))}</div>
           </div>
-          <span class="pill">${left} places left</span>
+          <span class="pill ${left === 0 ? "red" : ""}">
+            ${left} free
+          </span>
         </div>
-        <div class="meta-line">
-          <strong>Instructor:</strong> ${escapeHTML(session.instructor)}
-        </div>
-        <div class="meta-line">
+        <div class="meta"><strong>Instructor</strong> · ${escapeHTML(session.instructor)}</div>
+        <div class="meta">
           <strong>${groups.length}</strong> booking groups ·
           <strong>${people}/${session.capacity}</strong> people
         </div>
         <div class="capacity-track" role="progressbar"
-          aria-label="Places booked" aria-valuemin="0"
+          aria-label="People booked" aria-valuemin="0"
           aria-valuemax="${session.capacity}" aria-valuenow="${people}">
           <div class="capacity-fill ${left === 0 ? "full" : ""}"
             style="width:${percent}%"></div>
         </div>
-        <div class="capacity-label">
+        <div class="capacity-caption">
           <span>${people} booked</span><span>Capacity ${session.capacity}</span>
         </div>
         <button class="btn btn-danger btn-block" data-cancel="${escapeHTML(session.id)}">
-          Cancel Session
+          CANCEL SESSION ↘
         </button>
       </article>`;
   }
 
   function renderToday() {
-    const today = dateAt(0);
-    const sessions = state.sessions
-      .filter(s => s.date === today)
+    const sessions = state.sessions.filter(s => s.date === dayKey())
       .sort((a, b) => a.hour - b.hour || a.minute - b.minute);
     const groups = sessions.reduce((sum, s) => sum + bookedGroups(s.id).length, 0);
-    const people = sessions.reduce((sum, s) => sum + peopleBooked(s.id), 0);
+    const people = sessions.reduce((sum, s) => sum + bookedPeople(s.id), 0);
 
     app.innerHTML = `
       <div class="view-heading">
         <div>
-          <h1>Today's lessons</h1>
-          <div class="subtitle">Manage your six surf sessions in Lahinch.</div>
+          <div class="view-kicker">01 / Daily operations</div>
+          <h2>Today's sessions.</h2>
+          <div class="view-subtitle">Six sessions. Twelve places each. Keep the picture clear.</div>
         </div>
       </div>
-      <div class="stats-grid">
-        <div class="stat"><div class="stat-label">Sessions</div>
-          <div class="stat-value">${sessions.length}</div>
-          <div class="stat-note">Scheduled today</div></div>
-        <div class="stat"><div class="stat-label">Booking groups</div>
-          <div class="stat-value">${groups}</div>
-          <div class="stat-note">Across today's sessions</div></div>
-        <div class="stat"><div class="stat-label">People booked</div>
-          <div class="stat-value">${people}</div>
-          <div class="stat-note">Places occupied</div></div>
-        <div class="stat"><div class="stat-label">Awaiting rebook</div>
-          <div class="stat-value">${pendingBookings().length}</div>
-          <div class="stat-note">Booking groups</div></div>
+      ${renderStats([
+        {label:"Sessions", value:sessions.length, note:"Scheduled today"},
+        {label:"Booking groups", value:groups, note:"Today's groups"},
+        {label:"People booked", value:people, note:"Places occupied"},
+        {label:"Awaiting rebook", value:pending().length, note:"Groups outstanding"}
+      ])}
+      <div class="section-divider">
+        <span>Today's surf report</span>
+        <span>Capacity: 12 / session</span>
       </div>
-      <div class="section-label">Today's schedule · capacity 12 per session</div>
       <div class="session-list">
-        ${sessions.length
-          ? sessions.map(sessionCard).join("")
-          : `<div class="empty-state"><h2>No sessions today</h2>
-             <p>There are no sessions scheduled for this date.</p></div>`}
+        ${sessions.length ? sessions.map(sessionCard).join("") : `
+          <div class="empty">
+            <div class="empty-symbol">≋</div>
+            <h3>No sessions today</h3>
+            <p>There are no sessions scheduled for today's date.</p>
+          </div>`}
       </div>
-      <div class="footer-actions">
-        <button class="btn btn-secondary btn-block" data-reset>
-          ↻ Reset sample data
-        </button>
-        <p class="small-print">SAMPLE DATA only. All names and contact details are fictional.</p>
-      </div>`;
+      <div class="actions">
+        <button class="btn btn-secondary" data-reset>↻ RESET SAMPLE DATA</button>
+        <button class="btn btn-primary" data-go="rebook">VIEW REBOOK LIST ↗</button>
+      </div>
+      <p class="footnote">All customer records are fictional sample data. Cancelling a session requires confirmation.</p>
+    `;
   }
 
   function bookingCard(booking) {
     const options = availableSessions(booking);
-    const overdue = isOverdue(booking);
-    const cancelTime = new Date(booking.cancelledAt);
-    const cancelLabel = Number.isNaN(cancelTime.getTime())
-      ? "Unknown" : new Intl.DateTimeFormat("en-IE", {
-          day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"
-        }).format(cancelTime);
+    const isLate = overdue(booking);
+    const cancelled = new Date(booking.cancelledAt);
+    const cancelledLabel = Number.isNaN(cancelled.getTime()) ? "Unknown" :
+      new Intl.DateTimeFormat("en-IE", {
+        day: "numeric", month: "short",
+        hour: "2-digit", minute: "2-digit"
+      }).format(cancelled);
 
-    const optionMarkup = options.map(session => {
-      const label = `${sessionLabel(session)} · ${placesLeft(session)} places left`;
-      return `<option value="${escapeHTML(session.id)}">${escapeHTML(label)}</option>`;
-    }).join("");
+    const optionsHTML = options.map(session => `
+      <option value="${escapeHTML(session.id)}">
+        ${escapeHTML(sessionLabel(session))} · ${placesLeft(session)} places free
+      </option>
+    `).join("");
 
     return `
-      <article class="card booking-card ${overdue ? "overdue" : ""}">
-        <div class="card-top">
+      <article class="card booking-card ${isLate ? "overdue" : ""}">
+        <div class="card-head">
           <div>
-            <h2>${escapeHTML(booking.name)}</h2>
-            <div class="booking-description">SAMPLE DATA · ${booking.groupSize}
-              ${booking.groupSize === 1 ? "person" : "people"}</div>
+            <h3 class="booking-name">${escapeHTML(booking.name)}</h3>
+            <div class="booking-size">
+              SAMPLE GROUP · ${booking.groupSize}
+              ${booking.groupSize === 1 ? "PERSON" : "PEOPLE"}
+            </div>
           </div>
-          <span class="pill ${overdue ? "red" : ""}">
-            ${overdue ? "OVER 48 HOURS" : "Awaiting rebook"}
+          <span class="pill ${isLate ? "red" : ""}">
+            ${isLate ? "OVER 48 HOURS" : "TO REBOOK"}
           </span>
         </div>
-        ${overdue ? `<div class="overdue-banner">⚠ Rebooking overdue — cancelled more than 48 hours ago.</div>` : ""}
+        ${isLate ? `
+          <div class="overdue-banner">
+            ⚠ REBOOKING OVERDUE · Cancelled more than 48 hours ago.
+          </div>` : ""}
         <div class="booking-info">
-          <div class="info-cell"><div class="info-label">Email</div>
-            <div class="info-value">${escapeHTML(booking.contact)}</div></div>
-          <div class="info-cell"><div class="info-label">Phone</div>
-            <div class="info-value">${escapeHTML(booking.phone)}</div></div>
-          <div class="info-cell"><div class="info-label">Original session</div>
-            <div class="info-value">${escapeHTML(booking.originalSession || "Not recorded")}</div></div>
-          <div class="info-cell"><div class="info-label">Cancelled at</div>
-            <div class="info-value">${escapeHTML(cancelLabel)}</div></div>
+          <div>
+            <div class="info-label">Email</div>
+            <div class="info-value">${escapeHTML(booking.contact)}</div>
+          </div>
+          <div>
+            <div class="info-label">Phone</div>
+            <div class="info-value">${escapeHTML(booking.phone)}</div>
+          </div>
+          <div>
+            <div class="info-label">Original session</div>
+            <div class="info-value">${escapeHTML(booking.originalSession || "Not recorded")}</div>
+          </div>
+          <div>
+            <div class="info-label">Cancelled at</div>
+            <div class="info-value">${escapeHTML(cancelledLabel)}</div>
+          </div>
         </div>
-        <div class="rebook-picker">
-          <label for="pick-${escapeHTML(booking.id)}">Choose a new session</label>
-          <select id="pick-${escapeHTML(booking.id)}" data-picker="${escapeHTML(booking.id)}"
-            ${options.length ? "" : "disabled"}>
-            ${options.length
-              ? optionMarkup
-              : `<option value="">No suitable session available</option>`}
+        <div class="picker">
+          <label for="pick-${escapeHTML(booking.id)}">SELECT A NEW SESSION</label>
+          <select id="pick-${escapeHTML(booking.id)}"
+            data-picker="${escapeHTML(booking.id)}" ${options.length ? "" : "disabled"}>
+            ${options.length ? optionsHTML :
+              `<option value="">No suitable session available</option>`}
           </select>
         </div>
-        <button class="btn btn-primary btn-block" data-rebook="${escapeHTML(booking.id)}"
-          ${options.length ? "" : "disabled"}>
-          ↪ Rebook ${booking.groupSize} ${booking.groupSize === 1 ? "person" : "people"}
+        <button class="btn btn-primary btn-block"
+          data-rebook="${escapeHTML(booking.id)}" ${options.length ? "" : "disabled"}>
+          REBOOK ${booking.groupSize} ${booking.groupSize === 1 ? "PERSON" : "PEOPLE"} ↗
         </button>
-        ${!options.length ? `<p class="small-print">No upcoming session has enough free places for this entire group. No partial rebooking is allowed.</p>` : ""}
+        ${options.length ? "" : `
+          <p class="booking-footnote">
+            No upcoming session has enough free places for this entire group.
+            Partial rebooking is not allowed.
+          </p>`}
       </article>`;
   }
 
   function renderRebook() {
-    const pending = pendingBookings().sort((a, b) =>
+    const bookings = pending().sort((a, b) =>
       Date.parse(a.cancelledAt) - Date.parse(b.cancelledAt)
     );
     const people = pendingPeople();
-    const overdueCount = pending.filter(b => isOverdue(b)).length;
+    const late = bookings.filter(b => overdue(b)).length;
 
     app.innerHTML = `
       <div class="view-heading">
-        <div><h1>Rebook customers</h1>
-          <div class="subtitle">Find a new session for every cancelled booking.</div>
+        <div>
+          <div class="view-kicker">02 / Customer recovery</div>
+          <h2>Back in the water.</h2>
+          <div class="view-subtitle">Match each group to a future session with enough space.</div>
         </div>
       </div>
-      <div class="stats-grid">
-        <div class="stat"><div class="stat-label">Waiting groups</div>
-          <div class="stat-value">${pending.length}</div>
-          <div class="stat-note">Bookings to rebook</div></div>
-        <div class="stat"><div class="stat-label">People waiting</div>
-          <div class="stat-value">${people}</div>
-          <div class="stat-note">Places needed</div></div>
-        <div class="stat"><div class="stat-label">Overdue groups</div>
-          <div class="stat-value">${overdueCount}</div>
-          <div class="stat-note">48-hour rule</div></div>
-        <div class="stat"><div class="stat-label">Money at risk</div>
-          <div class="stat-value">${euro(people * PRICE_PER_PERSON)}</div>
-          <div class="stat-note">€45 per person</div></div>
+      ${renderStats([
+        {label:"Waiting groups", value:bookings.length, note:"Bookings to resolve"},
+        {label:"People waiting", value:people, note:"Places needed"},
+        {label:"Overdue groups", value:late, note:"48-hour rule"},
+        {label:"Money at risk", value:euro(people * PRICE), note:"€45 per person"}
+      ])}
+      <div class="section-divider">
+        <span>Rebook queue</span>
+        <span>${bookings.length} groups</span>
       </div>
-      <div class="section-label">Bookings awaiting rebooking</div>
       <div class="booking-list">
-        ${pending.length
-          ? pending.map(bookingCard).join("")
-          : `<div class="empty-state"><div class="empty-icon">🌊</div>
-             <h2>All customers are rebooked</h2>
-             <p>There are no cancelled bookings waiting for a new session.</p></div>`}
+        ${bookings.length ? bookings.map(bookingCard).join("") : `
+          <div class="empty">
+            <div class="empty-symbol">≋</div>
+            <h3>Queue clear.</h3>
+            <p>There are no bookings waiting to be rebooked.</p>
+          </div>`}
       </div>
-      <div class="footer-actions">
-        <button class="btn btn-secondary btn-block" data-reset>↻ Reset sample data</button>
-        <p class="small-print">Only upcoming sessions with enough capacity for the entire group are offered. Availability updates after every rebooking.</p>
-      </div>`;
+      <div class="actions">
+        <button class="btn btn-secondary" data-reset>↻ RESET SAMPLE DATA</button>
+        <button class="btn btn-primary" data-go="money">VIEW MONEY AT RISK ↗</button>
+      </div>
+      <p class="footnote">The list updates after every cancellation or successful rebooking.</p>
+    `;
   }
 
   function renderMoney() {
-    const pending = pendingBookings();
+    const bookings = pending();
     const people = pendingPeople();
-    const overdue = pending.filter(b => isOverdue(b)).length;
-    const totalGroups = state.bookings.filter(b => b.status === "booked").length;
-    const totalPeopleBooked = state.bookings
-      .filter(b => b.status === "booked")
-      .reduce((sum, b) => sum + b.groupSize, 0);
+    const late = bookings.filter(b => overdue(b)).length;
+    const booked = state.bookings.filter(b => b.status === "booked");
+    const bookedCount = booked.reduce((sum, b) => sum + b.groupSize, 0);
 
     app.innerHTML = `
       <div class="view-heading">
-        <div><h1>Money at risk</h1>
-          <div class="subtitle">A live view of revenue awaiting rebooking.</div>
+        <div>
+          <div class="view-kicker">03 / Revenue overview</div>
+          <h2>Know what's at stake.</h2>
+          <div class="view-subtitle">An estimate based on bookings still awaiting a new session.</div>
         </div>
       </div>
-      <section class="money-hero">
-        <div class="stat-label">Revenue at risk</div>
-        <div class="money-amount">${euro(people * PRICE_PER_PERSON)}</div>
-        <div class="money-note">${people} ${people === 1 ? "person" : "people"} awaiting rebooking × ${euro(PRICE_PER_PERSON)} per person</div>
-      </section>
-      <div class="money-details">
-        <div class="money-row"><span>Bookings awaiting rebooking</span><strong>${pending.length}</strong></div>
+      <div class="money-hero">
+        <div class="small-label">Estimated money at risk</div>
+        <div class="money-amount">${euro(people * PRICE)}</div>
+        <div class="money-description">
+          ${people} ${people === 1 ? "person" : "people"} waiting × €45 per person
+        </div>
+      </div>
+      <div class="money-rows">
+        <div class="money-row"><span>Bookings awaiting rebooking</span><strong>${bookings.length}</strong></div>
         <div class="money-row"><span>People awaiting rebooking</span><strong>${people}</strong></div>
-        <div class="money-row"><span>Overdue groups (48+ hours)</span><strong>${overdue}</strong></div>
-        <div class="money-row"><span>Currently booked groups</span><strong>${totalGroups}</strong></div>
-        <div class="money-row"><span>People currently booked</span><strong>${totalPeopleBooked}</strong></div>
+        <div class="money-row"><span>Groups overdue by 48+ hours</span><strong>${late}</strong></div>
+        <div class="money-row"><span>Currently booked groups</span><strong>${booked.length}</strong></div>
+        <div class="money-row"><span>People currently booked</span><strong>${bookedCount}</strong></div>
       </div>
-      <div class="rate-note">
-        <strong>Calculation</strong><br>
-        Money at risk = people in pending bookings × €45.
-        Rebooking a whole group removes all its people from the at-risk total immediately.
-        These figures use fictional SAMPLE DATA.
+      <div class="notice">
+        <strong>THE CALCULATION</strong><br>
+        Money at risk = people awaiting rebooking × €45.
+        Rebooking a whole group removes those people from the at-risk total.
+        This is an illustrative estimate using fictional sample data, not actual revenue.
       </div>
-      <div class="footer-actions">
-        <button class="btn btn-secondary btn-block" data-reset>↻ Reset sample data</button>
-      </div>`;
+      <div class="actions">
+        <button class="btn btn-secondary" data-reset>↻ RESET SAMPLE DATA</button>
+        <button class="btn btn-primary" data-go="today">BACK TO TODAY ↗</button>
+      </div>
+    `;
   }
 
   function render() {
-    renderHeaderDate();
+    renderHeader();
     renderNav();
-    if (currentView === "today") renderToday();
-    else if (currentView === "rebook") renderRebook();
+
+    if (view === "today") renderToday();
+    else if (view === "rebook") renderRebook();
     else renderMoney();
   }
 
-  function cancelSession(sessionId) {
-    const session = getSession(sessionId);
+  function cancelSession(id) {
+    const session = getSession(id);
+
     if (!session || session.cancelled) {
-      showToast("This session is already cancelled.");
+      toast("This session is already cancelled.");
       return;
     }
 
-    const groups = bookedGroups(sessionId);
-    if (!groups.length) {
-      showToast("There are no bookings in this session to move.");
+    const affected = bookedGroups(id);
+    if (!affected.length) {
+      toast("There are no bookings in this session to move.");
       return;
     }
 
-    const people = groups.reduce((sum, b) => sum + b.groupSize, 0);
+    const people = affected.reduce((sum, b) => sum + b.groupSize, 0);
     const confirmed = window.confirm(
-      `Cancel the ${timeLabel(session)} session on ${prettyDate(session.date)}?\n\n` +
-      `${groups.length} booking group(s), covering ${people} people, will move to REBOOK.\n\n` +
-      `This action can be reversed only by rebooking customers or resetting sample data.`
+      `Cancel the ${time(session)} session on ${formatDate(session.date)}?\n\n` +
+      `${affected.length} booking groups covering ${people} people will move to REBOOK.\n\n` +
+      `Continue?`
     );
+
     if (!confirmed) return;
 
-    const now = new Date().toISOString();
-    groups.forEach(booking => {
+    const timestamp = new Date().toISOString();
+    affected.forEach(booking => {
       booking.originalSession = sessionLabel(session);
-      booking.cancelledAt = now;
+      booking.cancelledAt = timestamp;
       booking.sessionId = null;
       booking.status = "pending";
     });
+
     session.cancelled = true;
-    saveState();
+    save();
     render();
-    showToast(`${groups.length} booking group(s) moved to REBOOK.`);
+    toast(`${affected.length} booking groups moved to REBOOK.`);
   }
 
-  function rebook(bookingId) {
-    const booking = state.bookings.find(b => b.id === bookingId);
+  function rebookCustomer(id) {
+    const booking = state.bookings.find(b => b.id === id);
+
     if (!booking || booking.status !== "pending") {
-      showToast("This booking is no longer awaiting rebooking.");
+      toast("This booking is no longer awaiting rebooking.");
       render();
       return;
     }
 
-    const picker = document.querySelector(`[data-picker="${bookingId}"]`);
-    const targetId = picker ? picker.value : "";
-    const target = getSession(targetId);
+    const picker = app.querySelector(`[data-picker="${id}"]`);
+    const session = picker ? getSession(picker.value) : null;
 
-    // Recheck live capacity before changing anything.
-    if (!target || target.cancelled ||
-        target.date < localDateKey(new Date()) ||
-        placesLeft(target) < booking.groupSize) {
-      showToast("That session no longer has enough free places. Choose another.");
+    // Validate again at the moment of booking. Never rely only on
+    // the session options rendered earlier.
+    if (!session || session.cancelled ||
+        session.date < dayKey() ||
+        placesLeft(session) < booking.groupSize) {
+      toast("Not enough places available. Please choose another session.");
       render();
       return;
     }
 
     const start = new Date(
-      `${target.date}T${pad(target.hour)}:${pad(target.minute)}:00`
+      `${session.date}T${pad(session.hour)}:${pad(session.minute)}:00`
     );
+
     if (start <= new Date()) {
-      showToast("That session has already started. Choose an upcoming session.");
+      toast("This session has already started. Choose a future session.");
       render();
       return;
     }
 
-    booking.sessionId = target.id;
+    booking.sessionId = session.id;
     booking.status = "booked";
     booking.cancelledAt = null;
 
-    saveState();
+    save();
     render();
-    showToast(`${booking.name} rebooked for ${sessionLabel(target)}.`);
+    toast(`Rebooked ${booking.groupSize} people for ${sessionLabel(session)}.`);
   }
 
   function resetData() {
-    const confirmed = window.confirm(
-      "Reset Atlantic Rebook to its original fictional SAMPLE DATA?\n\n" +
-      "All changes saved in this browser will be replaced."
-    );
-    if (!confirmed) return;
+    if (!window.confirm(
+      "Reset all changes and restore the original fictional sample data?\n\n" +
+      "Your current browser demo changes will be replaced."
+    )) return;
 
     state = makeInitialState();
-    saveState();
-    currentView = "today";
+    save();
+    view = "today";
     render();
-    showToast("Sample data reset successfully.");
+    toast("Sample data restored.");
   }
 
-  document.querySelector(".bottom-inner").addEventListener("click", event => {
+  document.querySelector(".nav").addEventListener("click", event => {
     const button = event.target.closest("[data-view]");
     if (!button) return;
-    currentView = button.dataset.view;
+    view = button.dataset.view;
     render();
     window.scrollTo({ top: 0, behavior: "auto" });
   });
@@ -842,22 +997,31 @@ select {
 
     const rebookButton = event.target.closest("[data-rebook]");
     if (rebookButton) {
-      rebook(rebookButton.dataset.rebook);
+      rebookCustomer(rebookButton.dataset.rebook);
       return;
     }
 
-    if (event.target.closest("[data-reset]")) {
+    const resetButton = event.target.closest("[data-reset]");
+    if (resetButton) {
       resetData();
+      return;
+    }
+
+    const goButton = event.target.closest("[data-go]");
+    if (goButton) {
+      view = goButton.dataset.go;
+      render();
+      window.scrollTo({ top: 0, behavior: "auto" });
     }
   });
 
-  state = loadState();
+  state = load();
   render();
 
-  // Refresh the overdue labels and live totals while the app remains open.
-  // No background polling or network access is used.
+  // Refresh overdue labels and dates if the page stays open.
   window.setInterval(() => {
-    if (currentView === "rebook" || currentView === "money") render();
+    if (view === "rebook" || view === "money") render();
+    else renderHeader();
   }, 60 * 1000);
 })();
 </script>
