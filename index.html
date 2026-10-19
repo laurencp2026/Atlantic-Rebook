@@ -190,6 +190,12 @@ h2 {
 }
 .pill.red { background: var(--redbg); color: var(--red); }
 .pill.green { background: var(--greenbg); color: var(--green); }
+.pill.cancelled { background: var(--redbg); color: var(--red); }
+.card.is-cancelled {
+  border-color: #d8b9af;
+  background: #fff9f6;
+}
+.card.is-cancelled .capacity-fill { background: #b9c4bd; }
 .meta {
   margin-top: 12px; color: var(--muted); font-size: 12px;
 }
@@ -655,15 +661,16 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
     const percent = Math.min(100, people / session.capacity * 100);
 
     return `
-      <article class="card">
+      <article class="card session-card ${session.cancelled ? "is-cancelled" : ""}">
         <div class="card-head">
           <div>
             <div class="session-time">${time(session)}</div>
             <div class="session-date">${escapeHTML(formatDate(session.date))}</div>
           </div>
-          <span class="pill ${left === 0 ? "red" : ""}">
-            ${left} free
-          </span>
+          ${session.cancelled
+            ? `<span class="pill cancelled" role="status">CANCELLED</span>`
+            : `<span class="pill ${left === 0 ? "red" : ""}">${left} free</span>`
+          }
         </div>
         <div class="meta"><strong>Instructor</strong> · ${escapeHTML(session.instructor)}</div>
         <div class="meta">
@@ -679,9 +686,14 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
         <div class="capacity-caption">
           <span>${people} booked</span><span>Capacity ${session.capacity}</span>
         </div>
-        <button class="btn btn-danger btn-block" data-cancel="${escapeHTML(session.id)}">
-          CANCEL SESSION ↘
-        </button>
+        ${session.cancelled
+          ? `<div class="pill cancelled" role="status" style="display:block; text-align:center; margin-top:15px; padding:11px;">
+               SESSION CANCELLED · REBOOKING QUEUE UPDATED
+             </div>`
+          : `<button class="btn btn-danger btn-block" data-cancel="${escapeHTML(session.id)}">
+               CANCEL SESSION ↘
+             </button>`
+        }
       </article>`;
   }
 
@@ -721,7 +733,7 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
         <button class="btn btn-secondary" data-reset>↻ RESET SAMPLE DATA</button>
         <button class="btn btn-primary" data-go="rebook">VIEW REBOOK LIST ↗</button>
       </div>
-      <p class="footnote">All customer records are fictional sample data. Cancelling a session requires confirmation.</p>
+      <p class="footnote">All customer records are fictional sample data. Cancelled sessions are marked and cannot be cancelled again. Cancelling a session requires confirmation.</p>
     `;
   }
 
