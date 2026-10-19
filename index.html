@@ -191,6 +191,45 @@ h2 {
 .pill.red { background: var(--redbg); color: var(--red); }
 .pill.green { background: var(--greenbg); color: var(--green); }
 .pill.cancelled { background: var(--redbg); color: var(--red); }
+.pill.condition-check { background: #fff0cf; color: #80520c; }
+.pill.condition-unsafe { background: var(--redbg); color: var(--red); }
+.condition-control { margin-top: 14px; }
+.condition-control label {
+  display: block; margin-bottom: 6px; color: var(--deep);
+  font-size: 10px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;
+}
+.condition-select { width: 100%; min-height: 43px; padding: 8px; }
+.weather-panel {
+  margin-top: 14px; padding: 12px; background: #edf2eb;
+  border: 1px solid var(--line);
+}
+.weather-heading {
+  display: flex; justify-content: space-between; gap: 8px; align-items: center;
+  color: var(--deep); font-size: 9px; font-weight: 900; letter-spacing: 1px;
+}
+.weather-heading span {
+  padding: 3px 5px; background: var(--sand); color: #80520c;
+  font-size: 8px; letter-spacing: .6px;
+}
+.weather-metrics {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px; margin-top: 12px;
+}
+.weather-metrics div { min-width: 0; }
+.weather-metrics strong {
+  display: block; color: var(--deep); font-size: 18px; line-height: 1.2;
+}
+.weather-metrics span {
+  display: block; margin-top: 3px; color: var(--muted); font-size: 9px;
+}
+.weather-explain { margin: 10px 0 0; color: var(--muted); font-size: 10px; }
+
+.risk-note {
+  margin-top: 10px; padding: 10px 11px; border-left: 3px solid var(--orange);
+  background: var(--sand); color: #5e523a; font-size: 11px;
+}
+.risk-note.unsafe { border-left-color: var(--red); background: var(--redbg); color: var(--red); }
+
 .card.is-cancelled {
   border-color: #d8b9af;
   background: #fff9f6;
@@ -425,6 +464,13 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
     return date.toISOString();
   }
 
+  function classifyWeather(forecast) {
+    // Demo-only thresholds; real thresholds must be agreed with qualified instructors.
+    if (forecast.waveM >= 2.0 || forecast.windKmh >= 35) return "Unsafe";
+    if (forecast.waveM >= 1.4 || forecast.windKmh >= 25) return "Check conditions";
+    return "Suitable";
+  }
+
   function makeInitialState() {
     const today = dayKey();
     const sessions = [
@@ -437,13 +483,28 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
       ["FUTURE-1", dayKey(1), 9, 30, "Niamh Kelly"],
       ["FUTURE-2", dayKey(1), 13, 0, "Finn Walsh"],
       ["FUTURE-3", dayKey(2), 10, 0, "Aoife Murphy"]
-    ].map(([id, date, hour, minute, instructor], index) => ({
-      id, date, hour, minute, instructor, capacity: CAPACITY, cancelled: false,
-      lessonType: index % 3 === 0 ? "Beginner" : index % 3 === 1 ? "Improver" : "Mixed level",
-      conditions: "Suitable",
-      // Fictional sample conditions only; no live surf forecast is connected.
-      conditionNote: "Sample conditions — confirm with instructor"
-    }));
+    ].map(([id, date, hour, minute, instructor], index) => {
+      // Fictional forecast values for demonstrating the risk workflow only.
+      const forecastSamples = [
+        { windKmh: 18, waveM: 0.8, rainMm: 0.2 },
+        { windKmh: 37, waveM: 2.1, rainMm: 1.8 },
+        { windKmh: 27, waveM: 1.5, rainMm: 0.8 },
+        { windKmh: 16, waveM: 0.7, rainMm: 0.0 },
+        { windKmh: 34, waveM: 1.9, rainMm: 2.4 },
+        { windKmh: 22, waveM: 1.1, rainMm: 0.3 },
+        { windKmh: 19, waveM: 0.9, rainMm: 0.1 },
+        { windKmh: 39, waveM: 2.3, rainMm: 1.2 },
+        { windKmh: 17, waveM: 0.8, rainMm: 0.0 }
+      ];
+      const forecast = forecastSamples[index % forecastSamples.length];
+      return {
+        id, date, hour, minute, instructor, capacity: CAPACITY, cancelled: false,
+        lessonType: index % 3 === 0 ? "Beginner" : index % 3 === 1 ? "Improver" : "Mixed level",
+        ...forecast,
+        conditions: classifyWeather(forecast),
+        conditionNote: "Fictional forecast sample — not live data"
+      };
+    });
 
     // Fictional sample records only. No real customer information.
     const bookings = [
@@ -683,7 +744,39 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
         </div>
         <div class="meta"><strong>Instructor</strong> · ${escapeHTML(session.instructor)}</div>
         <div class="meta"><strong>Lesson</strong> · ${escapeHTML(session.lessonType || "Not set")}</div>
-        <div class="meta"><strong>Conditions</strong> · <span class="pill green">${escapeHTML(session.conditions || "Not set")}</span></div>
+        <div class="meta"><strong>Weather / sea-condition status</strong> ·
+          <span class="pill ${session.conditions === "Unsafe" ? "condition-unsafe" : session.conditions === "Check conditions" ? "condition-check" : "green"}">
+            ${escapeHTML(session.conditions || "Not checked")}
+          </span>
+        </div>
+        <div class="weather-panel">
+          <div class="weather-heading">FICTIONAL WEATHER &amp; SURF CONDITIONS <span>DEMO ONLY</span></div>
+          <div class="weather-metrics">
+            <div><strong>${session.windKmh}</strong><span>Wind km/h</span></div>
+            <div><strong>${Number(session.waveM).toFixed(1)} m</strong><span>Wave height</span></div>
+            <div><strong>${Number(session.rainMm).toFixed(1)} mm</strong><span>Rain</span></div>
+          </div>
+          <p class="weather-explain"><strong>Weather risk assessment:</strong> ${session.conditions === "Unsafe"
+            ? "Risk flagged by the sample forecast. Do not offer this session for rebooking."
+            : session.conditions === "Check conditions"
+              ? "Review sea conditions with the instructor before offering this session."
+              : "Sample forecast is within the demo's illustrative limits."}</p>
+        </div>
+        ${!session.cancelled ? `
+          <div class="condition-control">
+            <label for="condition-${escapeHTML(session.id)}">Weather / sea-condition risk status (instructor review)</label>
+            <select class="condition-select" id="condition-${escapeHTML(session.id)}" data-condition="${escapeHTML(session.id)}">
+              <option value="Suitable" ${session.conditions === "Suitable" ? "selected" : ""}>Suitable — lesson can go ahead</option>
+              <option value="Check conditions" ${session.conditions === "Check conditions" ? "selected" : ""}>Check conditions — review before confirming</option>
+              <option value="Unsafe" ${session.conditions === "Unsafe" ? "selected" : ""}>Unsafe — do not run this session</option>
+            </select>
+          </div>
+          ${session.conditions === "Unsafe" ? `
+            <div class="risk-note unsafe"><strong>RISK FLAG:</strong> This session is marked unsafe and will not appear as a rebooking option. Cancel it to move its bookings to the rebooking queue.</div>
+          ` : session.conditions === "Check conditions" ? `
+            <div class="risk-note"><strong>REVIEW NEEDED:</strong> This session is not offered as a rebooking option until conditions are marked suitable.</div>
+          ` : ""}
+        ` : ""}
         <div class="meta">
           <strong>${groups.length}</strong> booking groups ·
           <strong>${people}/${session.capacity}</strong> people
@@ -702,7 +795,7 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
                SESSION CANCELLED · REBOOKING QUEUE UPDATED
              </div>`
           : `<button class="btn btn-danger btn-block" data-cancel="${escapeHTML(session.id)}">
-               CANCEL SESSION ↘
+               ${session.conditions === "Unsafe" ? "CANCEL & MOVE BOOKINGS ↘" : "CANCEL SESSION ↘"}
              </button>`
         }
       </article>`;
@@ -730,7 +823,7 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
       ])}
       <div class="section-divider">
         <span>Today's surf report</span>
-        <span>Sample conditions · Capacity: 12 / session</span>
+        <span>Fictional surf forecast · Capacity: 12 / session</span>
       </div>
       <div class="session-list">
         ${sessions.length ? sessions.map(sessionCard).join("") : `
@@ -978,7 +1071,7 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
         (booking.lessonType && session.lessonType !== booking.lessonType) ||
         session.date < dayKey() ||
         placesLeft(session) < booking.groupSize) {
-      toast("Not enough places available. Please choose another session.");
+      toast("That session is unsuitable, unavailable, or lacks enough places. Please choose another option.");
       render();
       return;
     }
@@ -1021,6 +1114,32 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
     view = button.dataset.view;
     render();
     window.scrollTo({ top: 0, behavior: "auto" });
+  });
+
+  app.addEventListener("change", event => {
+    const selector = event.target.closest("[data-condition]");
+    if (!selector) return;
+
+    const session = getSession(selector.dataset.condition);
+    if (!session || session.cancelled) return;
+
+    session.conditions = selector.value;
+    session.conditionNote = selector.value === "Suitable"
+      ? "Marked suitable by instructor"
+      : selector.value === "Check conditions"
+        ? "Needs instructor review"
+        : "Marked unsafe — do not run";
+
+    save();
+    render();
+
+    if (session.conditions === "Unsafe") {
+      toast("Risk flagged. This session is excluded from rebooking options.");
+    } else if (session.conditions === "Check conditions") {
+      toast("Condition check needed before this session can be offered.");
+    } else {
+      toast("Sample risk status overridden: session marked suitable.");
+    }
   });
 
   app.addEventListener("click", event => {
