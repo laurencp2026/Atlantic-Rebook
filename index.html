@@ -392,7 +392,7 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
 "use strict";
 
 (() => {
-  const STORAGE_KEY = "atlanticRebook.sampleData.v2";
+  const STORAGE_KEY = "atlanticRebook.sampleData.v3";
   const CAPACITY = 12;
   const PRICE = 45;
   const OVERDUE_MS = 48 * 60 * 60 * 1000;
@@ -437,8 +437,12 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
       ["FUTURE-1", dayKey(1), 9, 30, "Niamh Kelly"],
       ["FUTURE-2", dayKey(1), 13, 0, "Finn Walsh"],
       ["FUTURE-3", dayKey(2), 10, 0, "Aoife Murphy"]
-    ].map(([id, date, hour, minute, instructor]) => ({
-      id, date, hour, minute, instructor, capacity: CAPACITY, cancelled: false
+    ].map(([id, date, hour, minute, instructor], index) => ({
+      id, date, hour, minute, instructor, capacity: CAPACITY, cancelled: false,
+      lessonType: index % 3 === 0 ? "Beginner" : index % 3 === 1 ? "Improver" : "Mixed level",
+      conditions: "Suitable",
+      // Fictional sample conditions only; no live surf forecast is connected.
+      conditionNote: "Sample conditions — confirm with instructor"
     }));
 
     // Fictional sample records only. No real customer information.
@@ -488,14 +492,14 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
       {
         id: "B008", name: "SAMPLE: Sam Keane", groupSize: 3,
         contact: "sample.sam@example.com", phone: "SAMPLE: 080 000 0008",
-        sessionId: null, status: "pending",
+        sessionId: null, status: "pending", lessonType: "Beginner", preferredDayOffset: 1,
         cancelledAt: new Date(Date.now() - 50 * 60 * 60 * 1000).toISOString(),
         originalSession: "Sample session · 10:30"
       },
       {
         id: "B009", name: "SAMPLE: Drew Lynch", groupSize: 2,
         contact: "sample.drew@example.com", phone: "SAMPLE: 080 000 0009",
-        sessionId: null, status: "pending",
+        sessionId: null, status: "pending", lessonType: "Mixed level", preferredDayOffset: 2,
         cancelledAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
         originalSession: "Sample session · 12:00"
       }
@@ -605,17 +609,22 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
     return state.sessions
       .filter(session => {
         if (session.cancelled || session.date < dayKey()) return false;
+        if (session.conditions !== "Suitable") return false;
+        if (booking.lessonType && session.lessonType !== booking.lessonType) return false;
 
         const starts = new Date(
           `${session.date}T${pad(session.hour)}:${pad(session.minute)}:00`
         );
-
         return starts > now && placesLeft(session) >= booking.groupSize;
       })
-      .sort((a, b) =>
-        a.date.localeCompare(b.date) ||
-        a.hour - b.hour || a.minute - b.minute
-      )
+      .sort((a, b) => {
+        // Prefer the customer's requested day, while still showing other valid options.
+        const preferredDate = booking.preferredDayOffset ? dayKey(booking.preferredDayOffset) : null;
+        const aPreferred = preferredDate && a.date === preferredDate ? 0 : 1;
+        const bPreferred = preferredDate && b.date === preferredDate ? 0 : 1;
+        return aPreferred - bPreferred || a.date.localeCompare(b.date) ||
+          a.hour - b.hour || a.minute - b.minute;
+      })
       .slice(0, 3);
   }
 
@@ -673,6 +682,8 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
           }
         </div>
         <div class="meta"><strong>Instructor</strong> · ${escapeHTML(session.instructor)}</div>
+        <div class="meta"><strong>Lesson</strong> · ${escapeHTML(session.lessonType || "Not set")}</div>
+        <div class="meta"><strong>Conditions</strong> · <span class="pill green">${escapeHTML(session.conditions || "Not set")}</span></div>
         <div class="meta">
           <strong>${groups.length}</strong> booking groups ·
           <strong>${people}/${session.capacity}</strong> people
@@ -719,7 +730,7 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
       ])}
       <div class="section-divider">
         <span>Today's surf report</span>
-        <span>Capacity: 12 / session</span>
+        <span>Sample conditions · Capacity: 12 / session</span>
       </div>
       <div class="session-list">
         ${sessions.length ? sessions.map(sessionCard).join("") : `
@@ -749,7 +760,7 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
 
     const optionsHTML = options.map(session => `
       <option value="${escapeHTML(session.id)}">
-        ${escapeHTML(sessionLabel(session))} · ${placesLeft(session)} places free
+        ${escapeHTML(sessionLabel(session))} · ${escapeHTML(session.lessonType)} · ${placesLeft(session)} places free
       </option>
     `).join("");
 
@@ -772,6 +783,14 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
             ⚠ REBOOKING OVERDUE · Cancelled more than 48 hours ago.
           </div>` : ""}
         <div class="booking-info">
+          <div>
+            <div class="info-label">Lesson requirement</div>
+            <div class="info-value">${escapeHTML(booking.lessonType || "Not recorded")}</div>
+          </div>
+          <div>
+            <div class="info-label">Preferred day</div>
+            <div class="info-value">${booking.preferredDayOffset ? escapeHTML(formatDate(dayKey(booking.preferredDayOffset), true)) : "Flexible"}</div>
+          </div>
           <div>
             <div class="info-label">Email</div>
             <div class="info-value">${escapeHTML(booking.contact)}</div>
@@ -846,7 +865,7 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
         <button class="btn btn-secondary" data-reset>↻ RESET SAMPLE DATA</button>
         <button class="btn btn-primary" data-go="money">VIEW MONEY AT RISK ↗</button>
       </div>
-      <p class="footnote">The list updates after every cancellation or successful rebooking.</p>
+      <p class="footnote">The demo filters by lesson type, future start time, sample conditions and full-group capacity. Preferred day is prioritised. Conditions are fictional placeholders, not live surf forecasts.</p>
     `;
   }
 
@@ -927,6 +946,8 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
     const timestamp = new Date().toISOString();
     affected.forEach(booking => {
       booking.originalSession = sessionLabel(session);
+      booking.lessonType = session.lessonType || booking.lessonType || "Mixed level";
+      booking.preferredDayOffset = booking.preferredDayOffset || null;
       booking.cancelledAt = timestamp;
       booking.sessionId = null;
       booking.status = "pending";
@@ -953,6 +974,8 @@ footer a { color: var(--sea); font-size: 11px; font-weight: 800; }
     // Validate again at the moment of booking. Never rely only on
     // the session options rendered earlier.
     if (!session || session.cancelled ||
+        session.conditions !== "Suitable" ||
+        (booking.lessonType && session.lessonType !== booking.lessonType) ||
         session.date < dayKey() ||
         placesLeft(session) < booking.groupSize) {
       toast("Not enough places available. Please choose another session.");
